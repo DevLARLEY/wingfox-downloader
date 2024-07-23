@@ -105,11 +105,11 @@ class WingFox:
 
         enc_m3u8 = hls_request.json()['body']
 
-        secret = f'NTQ1ZjhmY2QtMzk3OS00NWZhLTkxNjktYzk3NTlhNDNhNTQ4#{body.get('seed_const')}'
+        secret = f"NTQ1ZjhmY2QtMzk3OS00NWZhLTkxNjktYzk3NTlhNDNhNTQ4#{body.get('seed_const')}"
         iv = bytes([1, 1, 2, 3, 5, 8, 13, 21, 34, 21, 13, 8, 5, 3, 2, 1])
 
         if body.get('hlsPrivate') == 2:
-            secret = f'OWtjN9xcDcc2cwXKxECpRgKw7piD4RwCdfOUlyNHFdSV0gHi={body.get('seed_const')}'
+            secret = f"OWtjN9xcDcc2cwXKxECpRgKw7piD4RwCdfOUlyNHFdSV0gHi={body.get('seed_const')}"
             iv = bytes([13, 22, 8, 12, 7, 6, 13, 1, 50, 11, 12, 8, 5, 16, 4, 1])
 
         aes_key = hashlib.md5(secret.encode()).hexdigest()[1:17].encode()
