@@ -55,7 +55,7 @@ Usage: node decrypt.js <input_fragment> <output_fragment> <key> <iv> <token> <mh
 - fragment_index: Index of fragment in manifest, starting at 0
 ````
 
-+ Key: Obtained by appending /playsafe/v12/ or /playsafe/v13/ depending on the lib_player version to the Key URI path inside the manifest
++ Key: Obtained by prepending /playsafe/v12/ or /playsafe/v13/ depending on the lib_player version to the Key URI path inside the manifest
 + IV: Contained in the manifest
 + Token: Obtained from this endpoint: `https://www.wingfox.com/polyv/polyv_get_token.php?video_id={video_id}`
 + Seed: Obtained from the JSON metadata endpoint at: `https://player.polyv.net/secure/{vid}.json`
