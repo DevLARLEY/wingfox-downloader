@@ -90,7 +90,7 @@ class WingFox:
             body: dict
     ) -> str | None:
         hls_request = requests.get(
-            url=body.get('hls')[0],
+            url=body.get('hls')[-1],
             params={
                 'device': 'desktop',
             },
