@@ -165,7 +165,6 @@ class WingFox:
                 parse_result._replace(query=urlencode(query))
             )
 
-
     def implant_token(
             self,
             m3u8_data: str,
@@ -238,6 +237,24 @@ class WingFox:
             token
         )
 
+    @staticmethod
+    def save_subtitles(
+            srt_data: list,
+            video_id: int
+    ):
+        if srt_data:
+            for srt in srt_data:
+                logging.info(f"Saving subtitle {srt.get('title')}...")
+                srt_request = requests.get(
+                    url=srt.get('url')
+                )
+
+                if srt_request.status_code != 200:
+                    logging.error(f"Unable to request subtitle ({srt_request.status_code}): {srt_request.text}")
+                    continue
+
+                open(f"{video_id}_{srt.get('title')}.srt", "w").write(srt_request.text)
+
 
 if __name__ == '__main__':
     parser = argparse.ArgumentParser(
@@ -274,6 +291,13 @@ if __name__ == '__main__':
         required=False
     )
     parser.add_argument(
+        "--subtitles",
+        action="store_true",
+        default=False,
+        help="Save subtitles",
+        required=False
+    )
+    parser.add_argument(
         "--debug", "--d",
         action="store_true",
         default=False,
@@ -286,7 +310,6 @@ if __name__ == '__main__':
     logging.basicConfig(format='[%(levelname)s]: %(message)s', level=logging.DEBUG if args.debug else logging.INFO)
 
     # TODO:
-    #  download subtitles
     #  get name from json
     #    lib_players:
     #  https://player.polyv.net/resp/vod-player-drm/canary/lib_player.js
@@ -304,9 +327,9 @@ if __name__ == '__main__':
     vid = dl.get_video_vid()
     decrypted_body = dl.get_hls_seed_url(vid)
 
-    print('seed', seed := decrypted_body.get('seed_const'))
-    print('hlsLevel', hls_level := decrypted_body.get('hlsLevel'))
-    print('hlsPrivate', version := decrypted_body.get('hlsPrivate'))
+    print('seed =>', seed := decrypted_body.get('seed_const'))
+    print('hlsLevel =>', hls_level := decrypted_body.get('hlsLevel'))
+    print('hlsPrivate =>', version := decrypted_body.get('hlsPrivate'))
 
     manifest_data = dl.get_m3u8(decrypted_body)
 
@@ -326,7 +349,6 @@ if __name__ == '__main__':
         hls_level=hls_level
     )
 
-    # TODO: throw error in test_normal.js
     if hls_level == "app" or version == 2:
         key, iv, token = dl.get_decrypt_info(
             m3u8_data=manifest_data,
@@ -341,13 +363,6 @@ if __name__ == '__main__':
 
                 logging.info(f"Decrypting fragment {idx}...")
                 try:
-                    # print([
-                    #     "node", f"decrypt_{version}.js",
-                    #     file, f"fragment_{idx}.mkv",
-                    #     key, iv,
-                    #     token, str(seed),
-                    #     str(idx)
-                    # ])
                     subprocess.check_output([
                         "node", f"decrypt_{version}.js",
                         file, f"fragment_{idx}.mkv",
@@ -371,5 +386,10 @@ if __name__ == '__main__':
             "-c", "copy",
             output_name
         ])
+
+    dl.save_subtitles(
+        srt_data=decrypted_body.get('srt'),
+        video_id=args.id
+    )
 
     clean("fragment_*.mkv", "filelist.txt", f"{args.id}.m3u8", str(args.id))
