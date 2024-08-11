@@ -7,6 +7,8 @@ import logging
 import os
 import shutil
 import subprocess
+from os.path import abspath, join, isdir, splitext, basename, dirname
+from pathlib import Path
 from urllib.parse import urlparse, urlunparse, urlencode, parse_qsl
 
 import m3u8
@@ -17,7 +19,7 @@ from Crypto.Util.Padding import unpad
 
 def clean(*globs):
     for g in globs:
-        if os.path.isdir(g):
+        if isdir(g):
             shutil.rmtree(g)
         else:
             for delete in glob.glob(g):
@@ -27,7 +29,7 @@ def clean(*globs):
 def get_absolute_paths(directory):
     for absolute, _, filenames in os.walk(directory):
         for filename in filenames:
-            yield os.path.abspath(os.path.join(absolute, filename))
+            yield abspath(join(absolute, filename))
 
 
 class WingFox:
@@ -240,7 +242,7 @@ class WingFox:
     @staticmethod
     def save_subtitles(
             srt_data: list,
-            video_id: int
+            output: str
     ):
         if srt_data:
             for srt in srt_data:
@@ -253,7 +255,11 @@ class WingFox:
                     logging.error(f"Unable to request subtitle ({srt_request.status_code}): {srt_request.text}")
                     continue
 
-                open(f"{video_id}_{srt.get('title')}.srt", "w").write(srt_request.text)
+                file_name = splitext(basename(output))[0]
+                open(
+                    join(dirname(output), f"{file_name}_{srt.get('title')}.srt"),
+                    "w"
+                ).write(srt_request.text)
 
 
 if __name__ == '__main__':
@@ -273,7 +279,7 @@ if __name__ == '__main__':
             """
             WingFox Video ID 
             Example: wingfox.com/p/<course_id>/<video_id>
-            Shell be obtained the 'get_video_url' request if not present in the URL
+            Shall be obtained from the 'get_video_url' request if not present in the URL
             """
         ),
         required=True
@@ -309,25 +315,25 @@ if __name__ == '__main__':
 
     logging.basicConfig(format='[%(levelname)s]: %(message)s', level=logging.DEBUG if args.debug else logging.INFO)
 
-    # TODO:
-    #  get name from json
-    #    lib_players:
-    #  https://player.polyv.net/resp/vod-player-drm/canary/lib_player.js
-    #  https://player.polyv.net/resp/vod-player-drm/canary/next/lib_player.js
+    #   lib_players:
+    # https://player.polyv.net/resp/vod-player-drm/canary/lib_player.js
+    # https://player.polyv.net/resp/vod-player-drm/canary/next/lib_player.js
 
     dl = WingFox(
         video_id=args.id,
         cookie=args.cookie
     )
 
-    output_name = f"{args.id}.mkv"
-    if args.output:
-        output_name = args.output
-
     vid = dl.get_video_vid()
     decrypted_body = dl.get_hls_seed_url(vid)
 
-    print('seed =>', seed := decrypted_body.get('seed_const'))
+    output_name = f"{decrypted_body.get('title')}_{args.id}.mkv"
+    if args.output:
+        output_name = args.output
+
+    Path(dirname(output_name)).mkdir(parents=True, exist_ok=True)
+
+    print('seed_const =>', seed := decrypted_body.get('seed_const'))
     print('hlsLevel =>', hls_level := decrypted_body.get('hlsLevel'))
     print('hlsPrivate =>', version := decrypted_body.get('hlsPrivate'))
 
@@ -357,7 +363,7 @@ if __name__ == '__main__':
             token=key_token
         )
         with open("filelist.txt", "w") as f:
-            for idx, file in enumerate(get_absolute_paths(os.path.join(str(args.id), "0"))):
+            for idx, file in enumerate(get_absolute_paths(join(str(args.id), "0"))):
                 if not file.endswith(".ts"):
                     continue
 
@@ -387,9 +393,10 @@ if __name__ == '__main__':
             output_name
         ])
 
-    dl.save_subtitles(
-        srt_data=decrypted_body.get('srt'),
-        video_id=args.id
-    )
+    if args.subtitles:
+        dl.save_subtitles(
+            srt_data=decrypted_body.get('srt'),
+            output=output_name
+        )
 
     clean("fragment_*.mkv", "filelist.txt", f"{args.id}.m3u8", str(args.id))
