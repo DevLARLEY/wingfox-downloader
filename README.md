@@ -1,5 +1,6 @@
 # WingFox Downloader
-A hooked version of the lib_player.js, that allows for YUV frame extraction.
+A hooked version of the lib_player.js, that allows for YUV frame extraction. \
+Only tested on free videos.
 
 ## Requirements
 + [Python 3.12](https://www.python.org/)
@@ -23,15 +24,16 @@ The only difference is that the 'next' version also includes the demuxer in WASM
 Based on [https://github.com/gyozaaaa/the-fox-that-drank-redbull/blob/master/wingfox.py](https://github.com/gyozaaaa/the-fox-that-drank-redbull/blob/master/wingfox.py) \
 Usage:
 ```ruby
-usage: WingFox Downloader [-h] --id ID --cookie COOKIE [--output OUTPUT] [--debug]
+usage: WingFox Downloader [-h] --id ID --cookie COOKIE [--output OUTPUT] [--subtitles] [--debug]
 
 Author: github.com/DevLARLEY Credits: github.com/gyozaaaa
 
 options:
   -h, --help       show this help message and exit
-  --id ID          WingFox Video ID Example: wingfox.com/p/<course_id>/<video_id> Shell be obtained the 'get_video_url' request if not present in the URL
+  --id ID          WingFox Video ID Example: wingfox.com/p/<course_id>/<video_id> Shall be obtained from the 'get_video_url' request if not present in the URL
   --cookie COOKIE  WingFox yiihuu_s_c_d/PHPSESSID Cookie
   --output OUTPUT  Output file name
+  --subtitles      Save subtitles
   --debug, --d     Print debug information
 ```
 
@@ -54,10 +56,10 @@ Usage: node decrypt.js <input_fragment> <output_fragment> <key> <iv> <token> <mh
 - fragment_index: Index of fragment in manifest, starting at 0
 ````
 
-+ Key: Obtained by prepending /playsafe/v12/ or /playsafe/v13/ depending on the lib_player version to the Key URI path inside the manifest
++ Key: Obtained by appending /playsafe/v12/ or /playsafe/v13/ depending on the lib_player version to the Key URI path inside the manifest
 + IV: Contained in the manifest
 + Token: Obtained from this endpoint: `https://www.wingfox.com/polyv/polyv_get_token.php?video_id={video_id}`
-+ Seed: Obtained from the JSON metadata endpoint at: `https://player.polyv.net/secure/{vid}.json`
++ Seed: Obtained from the JSON metadata endpoint at: `https://player.polyv.net/secure/{vid}.json` \
 
 See `main.py` for more info.
 
