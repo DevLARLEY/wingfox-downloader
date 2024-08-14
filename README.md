@@ -1,6 +1,5 @@
 # WingFox Downloader
-A hooked version of the lib_player.js, that allows for YUV frame extraction. \
-Only tested on free videos.
+A hooked version of the lib_player.js, that allows for YUV frame extraction.
 
 ## Requirements
 + [Python 3.12](https://www.python.org/)
