@@ -159,29 +159,29 @@ function decrypt(input, output, key, iv, token, mh, index){
     console.log("[LOG]", "Getting frames...");
     lib._getFrames(k);
 
-    console.log("[LOG]", "Saving audio...");
-    let audio = new Uint8Array(audioLength);
-    var audioOffset = 0;
-    audioQueue.forEach(arr => {
-      audio.set(arr, audioOffset);
-      audioOffset += arr.length;
-    });
-    fs.writeFileSync(`fragment_${index}.aac`, audio);
+    if(ptsValues.length > 1){
+      console.log("[LOG]", "Saving audio...");
+      let audio = new Uint8Array(audioLength);
+      var audioOffset = 0;
+      audioQueue.forEach(arr => {
+        audio.set(arr, audioOffset);
+        audioOffset += arr.length;
+      });
+      fs.writeFileSync(`fragment_${index}.aac`, audio);
 
-    console.log("[LOG]", "Muxing yuv frames...");
-    execSync(`ffmpeg -hide_banner -loglevel error -y -f image2 -c:v rawvideo -r ${Math.round(calculateFPS(ptsValues))} -pixel_format yuv420p -video_size ${width}x${height} -i frames\\frame_%d.yuv fragment_${index}.mp4`);
-  
-    console.log("[LOG]", "Muxing video and audio...");
-    execSync(`ffmpeg -hide_banner -loglevel error -y -i fragment_${index}.mp4 -i fragment_${index}.aac -codec copy ${output}`);
+      console.log("[LOG]", "Muxing yuv frames...");
+      execSync(`ffmpeg -hide_banner -loglevel error -y -f image2 -c:v rawvideo -r ${Math.round(calculateFPS(ptsValues))} -pixel_format yuv420p -video_size ${width}x${height} -i frames\\frame_%d.yuv fragment_${index}.mp4`);
+
+      console.log("[LOG]", "Muxing video and audio...");
+      execSync(`ffmpeg -hide_banner -loglevel error -y -i fragment_${index}.mp4 -i fragment_${index}.aac -codec copy ${output}`);
+    }else{
+      console.log("[LOG]", "Not enough frames, skipping fragment");
+    }
 
     console.log("[LOG]", "Cleaning up...");
     setTimeout(() => {
-      fs.unlink(`fragment_${index}.aac`, (err) => {
-        if (err) throw err;
-      });
-      fs.unlink(`fragment_${index}.mp4`, (err) => {
-        if (err) throw err;
-      });
+      fs.unlink(`fragment_${index}.aac`, (err) => {});
+      fs.unlink(`fragment_${index}.mp4`, (err) => {});
       fs.rm("frames", { recursive: true }, (err) => {
         if (err) throw err;
       });
