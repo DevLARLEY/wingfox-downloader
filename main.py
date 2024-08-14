@@ -258,8 +258,7 @@ class WingFox:
                 file_name = splitext(basename(output))[0]
                 open(
                     join(dirname(output), f"{file_name}_{srt.get('title')}.srt"),
-                    "w",
-                    encoding="utf-8"
+                    "w"
                 ).write(srt_request.text)
 
 
@@ -382,7 +381,8 @@ if __name__ == '__main__':
                     clean("fragment_*.mkv", "filelist.txt", f"{args.id}.m3u8", str(args.id))
                     exit(1)
 
-                f.write(f"file fragment_{idx}.mkv\n")
+                if os.path.exists(f"fragment_{idx}.mkv"):
+                    f.write(f"file fragment_{idx}.mkv\n")
 
         logging.info("Muxing all segments...")
         subprocess.check_output([
