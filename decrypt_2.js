@@ -170,7 +170,7 @@ function decrypt(input, output, key, iv, token, mh, index){
       fs.writeFileSync(`fragment_${index}.aac`, audio);
 
       console.log("[LOG]", "Muxing yuv frames...");
-      execSync(`ffmpeg -hide_banner -loglevel error -y -f image2 -c:v rawvideo -r ${Math.round(calculateFPS(ptsValues))} -pixel_format yuv420p -video_size ${width}x${height} -i frames\\frame_%d.yuv fragment_${index}.mp4`);
+      execSync(`ffmpeg -hide_banner -loglevel error -y -f image2 -c:v rawvideo -r ${Math.round(calculateFPS(ptsValues))} -pixel_format yuv420p -video_size ${width}x${height} -i frames/frame_%d.yuv fragment_${index}.mp4`);
 
       console.log("[LOG]", "Muxing video and audio...");
       execSync(`ffmpeg -hide_banner -loglevel error -y -i fragment_${index}.mp4 -i fragment_${index}.aac -codec copy ${output}`);
