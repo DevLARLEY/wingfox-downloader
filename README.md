@@ -6,6 +6,10 @@ A hooked version of the lib_player.js, that allows for YUV frame extraction.
 + [NodeJS 14.14.0](https://nodejs.org/) or above
 + [ffmpeg](https://ffmpeg.org/)
 
+## Tested Operating Systems
++ Windows
++ Linux (Ubuntu)
+
 ## Installation
 + Install the `requirements.txt` file
 
