@@ -7,6 +7,7 @@ import logging
 import os
 import shutil
 import subprocess
+import sys
 from os.path import abspath, join, isdir, splitext, basename, dirname
 from pathlib import Path
 from urllib.parse import urlparse, urlunparse, urlencode, parse_qsl
@@ -28,7 +29,7 @@ def clean(*globs):
 
 def get_absolute_paths(directory):
     for absolute, _, filenames in os.walk(directory):
-        for filename in filenames:
+        for filename in sorted(filenames):
             yield abspath(join(absolute, filename))
 
 
@@ -195,7 +196,7 @@ class WingFox:
             hls_level: str
     ):
         command = [
-            "N_m3u8DL-RE-WingFox",
+            join("" if sys.platform == "win32" else ".", "N_m3u8DL-RE-WingFox"),
             m3u8_file,
             "--no-log",
             "--wingfox-decrypt",
