@@ -370,13 +370,14 @@ if __name__ == '__main__':
 
                 logging.info(f"Decrypting fragment {idx}...")
                 try:
-                    subprocess.check_output([
+                    subprocess.check_output(command := [
                         "node", f"decrypt_{version}.js",
                         file, f"fragment_{idx}.mkv",
                         key, iv,
                         token, str(seed),
                         str(idx)
                     ], shell=False)
+                    logging.debug(' '.join(command))
                 except Exception:
                     logging.error("Error while decrypting fragment")
                     clean("fragment_*.mkv", "filelist.txt", f"{args.id}.m3u8", str(args.id))
