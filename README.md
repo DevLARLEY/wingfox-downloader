@@ -27,7 +27,7 @@ The only difference is that the 'next' version also includes the demuxer in WASM
 Based on [https://github.com/gyozaaaa/the-fox-that-drank-redbull/blob/master/wingfox.py](https://github.com/gyozaaaa/the-fox-that-drank-redbull/blob/master/wingfox.py) \
 Usage:
 ```ruby
-usage: WingFox Downloader [-h] --id ID --cookie COOKIE [--output OUTPUT] [--subtitles] [--debug]
+usage: python main.py [-h] --id ID --cookie COOKIE [--output OUTPUT] [--subtitles] [--debug]
 
 Author: github.com/DevLARLEY Credits: github.com/gyozaaaa
 
