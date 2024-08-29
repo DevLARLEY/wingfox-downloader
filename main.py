@@ -259,7 +259,8 @@ class WingFox:
                 file_name = splitext(basename(output))[0]
                 open(
                     join(dirname(output), f"{file_name}_{srt.get('title')}.srt"),
-                    "w"
+                    "w",
+                    encoding="utf-8"
                 ).write(srt_request.text)
 
 
