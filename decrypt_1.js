@@ -160,7 +160,11 @@ function decrypt(input, output, key, iv, token, mh, index){
         execSync(`ffmpeg -hide_banner -loglevel error -y -f image2 -c:v rawvideo -r ${Math.round(calculateFPS(ptsValues))} -pixel_format yuv420p -video_size ${width}x${height} -i frames/frame_%d.yuv fragment_${index}.mp4`);
 
         console.log("[LOG]", "Muxing video and audio...");
-        execSync(`ffmpeg -hide_banner -loglevel error -y -i fragment_${index}.mp4 -i fragment_${index}.aac -codec copy ${output}`);
+        if (audioOffset == 0){
+          execSync(`ffmpeg -hide_banner -loglevel error -y -i fragment_${index}.mp4 -codec copy ${output}`);
+        }else{
+          execSync(`ffmpeg -hide_banner -loglevel error -y -i fragment_${index}.mp4 -i fragment_${index}.aac -codec copy ${output}`);
+        }
       }else{
         console.log("[LOG]", "Not enough frames, skipping fragment");
       }
