@@ -92,8 +92,10 @@ class WingFox:
     def get_m3u8(
             body: dict
     ) -> str | None:
+        manifest_url = body.get('hls')[-1]
+
         hls_request = requests.get(
-            url=body.get('hls')[-1],
+            url=manifest_url,
             params={
                 'device': 'desktop',
             },
@@ -105,6 +107,9 @@ class WingFox:
         if hls_request.status_code != 200:
             logging.error(f"Unable to request m3u8 data ({hls_request.status_code}): {hls_request.text}")
             exit(-1)
+
+        if splitext(urlparse(manifest_url).path)[-1] == ".m3u8":
+            return hls_request.text
 
         enc_m3u8 = hls_request.json()['body']
 
@@ -202,6 +207,7 @@ class WingFox:
             "--wingfox-decrypt",
             "1",
         ]
+
         if hls_level == "app" or version == 2:
             command.extend([
                 "--skip-merge"
