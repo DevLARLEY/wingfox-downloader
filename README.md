@@ -1,3 +1,7 @@
+# This program is now obsolete. Use [PolyVGet](https://github.com/DevLARLEY/PolyVGet) instead.
+
+
+
 # WingFox Downloader
 A hooked version of the lib_player.js, that allows for YUV frame extraction.
 
